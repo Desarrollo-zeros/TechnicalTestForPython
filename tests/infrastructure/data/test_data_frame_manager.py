@@ -3,8 +3,9 @@ import os
 import pandas as pd
 import sys
 
-from app.domain.contracts.Idata_loader import IDataLoader
-from app.domain.sales.sale import Sale
+from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
+from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
+from app.domain.entities.sales.sale import Sale
 from app.infrastructure.data.data_frame_manager import DataFrameManager
 from app.infrastructure.data.data_loader import DataLoader
 
@@ -48,7 +49,7 @@ class TestDataFrameManager(unittest.TestCase):
         })
 
         self.df1.to_parquet(os.path.join(self.test_dir, 'test1.parquet'))
-        self.data_loader = DataLoader()
+        self.data_loader: IDataLoader = DataLoader()
 
     def tearDown(self):
         # Eliminar los archivos y el directorio de prueba después de cada prueba
@@ -59,7 +60,7 @@ class TestDataFrameManager(unittest.TestCase):
     def test_query_sales(self):
         # Crear una instancia de DataFrameManager con DataLoader inyectado
 
-        df_manager = DataFrameManager(self.data_loader, self.test_dir)
+        df_manager: IDataFrameManager = DataFrameManager(self.data_loader, self.test_dir)
 
         # Consultar los datos utilizando el modelo Sale
         sales = df_manager.query(Sale)

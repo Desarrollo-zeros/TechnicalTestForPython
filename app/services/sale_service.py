@@ -1,17 +1,15 @@
 from typing import List
 from datetime import datetime
-
 import pandas as pd
 
-from app.domain.contracts.infrastructures.Idata_loader import IDataLoader
-from app.infrastructure.data.data_frame_manager import DataFrameManager
-from app.domain.sales.sale import Sale
-from app.infrastructure.data.data_loader import DataLoader
+from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
+from app.domain.entities.sales.sale import Sale
+from app.domain.contracts.services.i_sale_service import ISaleService
 
-class SaleService:
-    def __init__(self, data_directory: str):
-        data_loader: IDataLoader = DataLoader()
-        self.data_manager = DataFrameManager(data_loader, data_directory)
+
+class SaleService(ISaleService):
+    def __init__(self, data_manager: IDataFrameManager):
+        self.data_manager = data_manager
 
     def get_sales_by_employee(self, key_employee: str, start_date: datetime, end_date: datetime) -> List[Sale]:
         sales = self.data_manager.query(Sale)
@@ -29,16 +27,21 @@ class SaleService:
         sales = self.data_manager.query(Sale)
         df = pd.DataFrame([sale.__dict__ for sale in sales])
         return df.groupby("KeyStore").agg(total_sales=pd.NamedAgg(column="Amount", aggfunc="sum"),
-                                          avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(orient="records")
+                                          avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(
+            orient="records")
 
     def get_total_avg_sales_by_product(self) -> List[dict]:
         sales = self.data_manager.query(Sale)
         df = pd.DataFrame([sale.__dict__ for sale in sales])
         return df.groupby("KeyProduct").agg(total_sales=pd.NamedAgg(column="Amount", aggfunc="sum"),
-                                            avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(orient="records")
+                                            avg_sales=pd.NamedAgg(column="Amount",
+                                                                  aggfunc="mean")).reset_index().to_dict(
+            orient="records")
 
     def get_total_avg_sales_by_employee(self) -> List[dict]:
         sales = self.data_manager.query(Sale)
         df = pd.DataFrame([sale.__dict__ for sale in sales])
         return df.groupby("KeyEmployee").agg(total_sales=pd.NamedAgg(column="Amount", aggfunc="sum"),
-                                             avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(orient="records")
+                                             avg_sales=pd.NamedAgg(column="Amount",
+                                                                   aggfunc="mean")).reset_index().to_dict(
+            orient="records")

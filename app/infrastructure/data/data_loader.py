@@ -1,8 +1,7 @@
-import sys
 import os
 import pandas as pd
 
-from app.domain.contracts.Idata_loader import IDataLoader
+from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 
 
 class DataLoader(IDataLoader):

@@ -4,12 +4,10 @@ import pandas as pd
 from datetime import datetime
 from app.infrastructure.data.data_loader import DataLoader
 from app.infrastructure.data.data_frame_manager import DataFrameManager
-from app.domain.sales.sale import Sale
 from app.services.sale_service import SaleService
 
 
 class TestSaleService(unittest.TestCase):
-    sale_service: SaleService = None
 
     def setUp(self):
         # Crear un directorio de prueba
@@ -45,7 +43,9 @@ class TestSaleService(unittest.TestCase):
         })
 
         self.df1.to_parquet(os.path.join(self.test_dir, 'test1.parquet'))
-        self.sale_service = SaleService(self.test_dir)
+        data_loader = DataLoader()
+        data_manager = DataFrameManager(data_loader, self.test_dir)
+        self.sale_service = SaleService(data_manager)
 
     def tearDown(self):
         # Eliminar los archivos y el directorio de prueba después de cada prueba

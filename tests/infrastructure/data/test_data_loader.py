@@ -3,7 +3,7 @@ import os
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from app.domain.contracts.Idata_loader import IDataLoader
+from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.infrastructure.data.data_loader import DataLoader
 
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 from datetime import datetime
-from app.domain.sales.sale import Sale
+from app.domain.entities.sales.sale import Sale
 
 
 class ISaleService(ABC):
