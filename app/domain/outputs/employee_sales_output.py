@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class StoreSalesOutput(BaseModel):
-    KeyStore: str
+class EmployeeSalesOutput(BaseModel):
+    KeyEmployee: str
     total_sales: float
     avg_sales: float

@@ -7,6 +7,7 @@ from pandas.testing import assert_frame_equal
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.infrastructure.data.data_loader import DataLoader
 
+
 class TestDataLoader(unittest.TestCase):
     data_loader: IDataLoader = None
 
@@ -54,6 +55,7 @@ class TestDataLoader(unittest.TestCase):
                 self.data_loader.load_parquet_files(empty_dir)
         finally:
             os.rmdir(empty_dir)
+
 
 if __name__ == '__main__':
     unittest.main()

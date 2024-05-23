@@ -19,7 +19,7 @@ class Settings:
         self.SECRET_KEY: str = os.getenv("SECRET_KEY")
         self.ALGORITHM: str = "HS256"
         self.DATABASE_URL: str = os.getenv("DATABASE_URL")
-        self.DATA_DIRECTORY: str = os.getenv("DATA_DIRECTORY")
+        self.DATA_DIRECTORY: str = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../', os.getenv("DATA_DIRECTORY")))
         self.MAX_SIZE_CACHE: int = int(os.getenv("MAX_SIZE_CACHE"))
         self.TTL_CACHE: int = int(os.getenv("TTL_CACHE"))
         self.__initialized = True

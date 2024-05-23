@@ -3,6 +3,9 @@ import pandas as pd
 from cachetools import TTLCache
 from threading import Thread, Lock, Event
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
+from app.core.config import settings
+
+"""Se creo un decorador custom para poder obtener configurar la data en cache"""
 
 
 def cached_property(func):
@@ -10,7 +13,7 @@ def cached_property(func):
 
     def wrapper(self, *args, **kwargs):
         if not hasattr(self, '_cache'):
-            self._cache = TTLCache(maxsize=10, ttl=360)
+            self._cache = TTLCache(maxsize=settings.MAX_SIZE_CACHE, ttl=settings.TTL_CACHE)
         key = (func.__name__, args, frozenset(kwargs.items()))
         if key not in self._cache:
             self._cache[key] = func(self, *args, **kwargs)
@@ -42,6 +45,8 @@ class DataLoader(IDataLoader):
 
         Raises:
             FileNotFoundError: Si el directorio no existe o no contiene archivos Parquet.
+            :param directory:
+            :return:
         """
         if not os.path.exists(directory):
             raise FileNotFoundError(f"El directorio {directory} no existe")

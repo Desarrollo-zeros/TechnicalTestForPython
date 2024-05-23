@@ -19,11 +19,11 @@ class SaleOutput(BaseModel):
     Amount: float
     CostAmount: float
     DiscAmount: float
-    Tickets: str
-    Products: str
-    Customers: str
-    Employees: str
-    Stores: str
-    Divisions: str
-    Time: str
-    Cedis: str
+    Tickets: dict
+    Products: dict
+    Customers: dict
+    Employees: dict
+    Stores: dict
+    Divisions: dict
+    Time: dict
+    Cedis: dict
