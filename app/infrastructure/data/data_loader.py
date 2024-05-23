@@ -21,6 +21,7 @@ def cached_property(func):
 
 class DataLoader(IDataLoader):
     def __init__(self, cache: TTLCache):
+        super().__init__()
         self._cache = cache
         self._dataframe = pd.DataFrame()
         self._load_thread = None
