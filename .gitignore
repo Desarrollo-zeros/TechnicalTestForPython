@@ -175,3 +175,5 @@ cython_debug/
 tests/*
 !tests/**/*.py
 tests/**/__pycache__/
+
+__pycache__
