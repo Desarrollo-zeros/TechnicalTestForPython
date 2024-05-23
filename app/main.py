@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.endpoints import sales
 
 
 # Crear la aplicación FastAPI
@@ -22,6 +23,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(sales.router, prefix="/api/v1", tags=["sales"])
 
 
 # Iniciar la aplicación

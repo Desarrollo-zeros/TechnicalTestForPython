@@ -1,11 +1,11 @@
 import unittest
 import os
 import pandas as pd
+from cachetools import TTLCache
 from pandas.testing import assert_frame_equal
 
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.infrastructure.data.data_loader import DataLoader
-
 
 class TestDataLoader(unittest.TestCase):
     data_loader: IDataLoader = None
@@ -21,9 +21,13 @@ class TestDataLoader(unittest.TestCase):
 
         self.df1.to_parquet(os.path.join(self.test_dir, 'test1.parquet'))
         self.df2.to_parquet(os.path.join(self.test_dir, 'test2.parquet'))
-        self.data_loader = DataLoader()
+        cache = TTLCache(maxsize=1, ttl=360)
+        self.data_loader = DataLoader(cache)
 
     def tearDown(self):
+        # Asegurarse de que el hilo de carga en segundo plano se haya completado
+        if self.data_loader._load_thread:
+            self.data_loader._load_thread.join()
         # Eliminar los archivos y el directorio de prueba después de cada prueba
         for f in os.listdir(self.test_dir):
             os.remove(os.path.join(self.test_dir, f))
@@ -50,7 +54,6 @@ class TestDataLoader(unittest.TestCase):
                 self.data_loader.load_parquet_files(empty_dir)
         finally:
             os.rmdir(empty_dir)
-
 
 if __name__ == '__main__':
     unittest.main()

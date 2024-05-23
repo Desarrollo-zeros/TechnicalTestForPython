@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import sys
 
+from cachetools import TTLCache
+
 from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.domain.entities.sales.sale import Sale
@@ -49,7 +51,9 @@ class TestDataFrameManager(unittest.TestCase):
         })
 
         self.df1.to_parquet(os.path.join(self.test_dir, 'test1.parquet'))
-        self.data_loader: IDataLoader = DataLoader()
+
+        cache = TTLCache(maxsize=1, ttl=360)
+        self.data_loader: IDataLoader = DataLoader(cache)
 
     def tearDown(self):
         # Eliminar los archivos y el directorio de prueba después de cada prueba

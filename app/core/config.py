@@ -5,10 +5,24 @@ load_dotenv()
 
 
 class Settings:
-    SECRET_KEY: str = os.getenv("SECRET_KEY")
-    ALGORITHM: str = "HS256"
-    DATABASE_URL: str = os.getenv("DATABASE_URL")
-    DATA_DIRECTORY: str = os.getenv("DATA_DIRECTORY")
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(Settings, cls).__new__(cls)
+            cls._instance.__initialized = False
+        return cls._instance
+
+    def __init__(self):
+        if self.__initialized:
+            return
+        self.SECRET_KEY: str = os.getenv("SECRET_KEY")
+        self.ALGORITHM: str = "HS256"
+        self.DATABASE_URL: str = os.getenv("DATABASE_URL")
+        self.DATA_DIRECTORY: str = os.getenv("DATA_DIRECTORY")
+        self.MAX_SIZE_CACHE: int = int(os.getenv("MAX_SIZE_CACHE"))
+        self.TTL_CACHE: int = int(os.getenv("TTL_CACHE"))
+        self.__initialized = True
 
 
 settings = Settings()

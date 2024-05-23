@@ -2,6 +2,9 @@ import unittest
 import os
 import pandas as pd
 from datetime import datetime
+
+from cachetools import TTLCache
+
 from app.infrastructure.data.data_loader import DataLoader
 from app.infrastructure.data.data_frame_manager import DataFrameManager
 from app.services.sale_service import SaleService
@@ -43,7 +46,8 @@ class TestSaleService(unittest.TestCase):
         })
 
         self.df1.to_parquet(os.path.join(self.test_dir, 'test1.parquet'))
-        data_loader = DataLoader()
+        cache = TTLCache(maxsize=1, ttl=360)
+        data_loader = DataLoader(cache)
         data_manager = DataFrameManager(data_loader, self.test_dir)
         self.sale_service = SaleService(data_manager)
 
