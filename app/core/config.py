@@ -23,7 +23,9 @@ class Settings:
         self.MAX_SIZE_CACHE: int = int(os.getenv("MAX_SIZE_CACHE"))
         self.TTL_CACHE: int = int(os.getenv("TTL_CACHE"))
         self.URL_DATA_EXAMPLE = (os.getenv("URL_DATA_EXAMPLE"))
+        self.ACCESS_TOKEN_EXPIRE_MINUTES : int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
         self.ml_models = {}
+        self.SERVICE_ACCOUNT_KEY = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../', os.getenv("SERVICE_ACCOUNT_KEY")))
         self.__initialized = True
 
 

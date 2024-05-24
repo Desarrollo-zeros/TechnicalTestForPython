@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, Request
 from typing import List
+
+from app.api.dependencies import oauth2_scheme
 from app.domain.contracts.services.i_sale_service import ISaleService
 from app.domain.inputs.product_input import ProductInput
 from app.domain.inputs.store_input import StoreInput

@@ -1,4 +1,6 @@
 from cachetools import TTLCache
+from fastapi.security import OAuth2PasswordBearer
+
 from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.domain.contracts.services.i_sale_service import ISaleService
@@ -36,3 +38,6 @@ class SaleServiceSingleton(metaclass=SingletonMeta):
 def get_sale_service() -> ISaleService:
     singleton_instance = SaleServiceSingleton()
     return singleton_instance.get_service()
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
