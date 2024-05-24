@@ -7,7 +7,7 @@ from app.domain.inputs.user_register_input import UserRegistration
 from app.services.auth_service import AuthService
 
 router = APIRouter()
-@router.post("/register")
+@router.post("/users/register")
 async def register(user_details: UserRegistration):
     try:
         user = AuthService().register_user(user_details)
@@ -15,7 +15,7 @@ async def register(user_details: UserRegistration):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Registro ha fallado: {str(e)}")
 
-@router.post("/login")
+@router.post("/users/login")
 async def login(user_credentials: UserLogin):
     try:
         token = AuthService().login_user(user_credentials)

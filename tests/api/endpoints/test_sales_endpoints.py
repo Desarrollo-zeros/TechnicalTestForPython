@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 import pandas as pd
 from fastapi.testclient import TestClient
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.core.config import settings
 from app.main import app
 from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
@@ -14,6 +14,7 @@ from app.domain.outputs.store_sales_output import StoreSalesOutput
 from app.domain.outputs.product_sales_output import ProductSalesOutput
 from app.domain.outputs.employee_sales_output import EmployeeSalesOutput
 from app.services.sale_service import SaleService
+from jose import jwt
 
 client = TestClient(app)
 
@@ -56,11 +57,19 @@ def create_mock_sale_service() -> ISaleService:
     sale_service: ISaleService = SaleService(data_manager)
     return sale_service
 
+def create_jwt_token():
+    expire = datetime.utcnow() + timedelta(minutes=30)
+    to_encode = {"sub": "test_user_id", "exp": expire}
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
 class TestSalesEndpoints(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # Configurar el sale_service en el estado de la aplicación para pruebas
         settings.ml_models["sale_service"] = create_mock_sale_service()
+        cls.token = create_jwt_token()
+        cls.headers = {"Authorization": f"Bearer {cls.token}"}
 
     @patch("app.api.endpoints.sales.get_sale_service")
     def test_get_sales_by_employee(self, mock_get_sale_service):
@@ -100,7 +109,7 @@ class TestSalesEndpoints(unittest.TestCase):
             "StartDate": "2023-01-01T00:00:00",
             "EndDate": "2023-12-31T23:59:59"
         }
-        response = client.post("/api/v1/sales/employee", json=input_data)
+        response = client.post("/api/v1/sales/employee", json=input_data, headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 1)
@@ -142,7 +151,7 @@ class TestSalesEndpoints(unittest.TestCase):
             "StartDate": "2023-01-01T00:00:00",
             "EndDate": "2023-12-31T23:59:59"
         }
-        response = client.post("/api/v1/sales/product", json=input_data)
+        response = client.post("/api/v1/sales/product", json=input_data, headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 1)
@@ -184,7 +193,7 @@ class TestSalesEndpoints(unittest.TestCase):
             "StartDate": "2023-01-01T00:00:00",
             "EndDate": "2023-12-31T23:59:59"
         }
-        response = client.post("/api/v1/sales/store", json=input_data)
+        response = client.post("/api/v1/sales/store", json=input_data, headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 1)
@@ -196,7 +205,7 @@ class TestSalesEndpoints(unittest.TestCase):
             StoreSalesOutput(KeyStore="1|002", total_sales=1000.0, avg_sales=100.0)
         ]
 
-        response = client.get("/api/v1/sales/store/total_avg")
+        response = client.get("/api/v1/sales/store/total_avg", headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 3)
@@ -208,7 +217,7 @@ class TestSalesEndpoints(unittest.TestCase):
             ProductSalesOutput(KeyProduct="1|44733", total_sales=1000.0, avg_sales=100.0)
         ]
 
-        response = client.get("/api/v1/sales/product/total_avg")
+        response = client.get("/api/v1/sales/product/total_avg", headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 3)
@@ -220,7 +229,7 @@ class TestSalesEndpoints(unittest.TestCase):
             EmployeeSalesOutput(KeyEmployee="1|343", total_sales=1000.0, avg_sales=100.0)
         ]
 
-        response = client.get("/api/v1/sales/employee/total_avg")
+        response = client.get("/api/v1/sales/employee/total_avg", headers=self.headers)
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.json(), list)
         self.assertEqual(len(response.json()), 3)
