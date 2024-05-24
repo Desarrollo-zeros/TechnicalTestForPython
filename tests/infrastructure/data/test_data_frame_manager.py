@@ -68,6 +68,7 @@ class TestDataFrameManager(unittest.TestCase):
 
         # Consultar los datos utilizando el modelo Sale
         sales = df_manager.query(Sale)
+        print(sales)
         self.assertEqual(len(sales), 2)
         self.assertIsInstance(sales[0], Sale)
         self.assertEqual(sales[0].KeySale, 'sale1')

@@ -1,9 +1,7 @@
 from contextlib import asynccontextmanager
-from http.client import HTTPException
+
 
 from fastapi import FastAPI, Request, Depends
-from fastapi.security import OAuth2PasswordBearer
-from firebase_admin import auth
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings

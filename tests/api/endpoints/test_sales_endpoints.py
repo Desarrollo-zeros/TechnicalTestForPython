@@ -1,8 +1,11 @@
+import os
+import sys
 import unittest
+import warnings
 from unittest.mock import patch
 import pandas as pd
 from fastapi.testclient import TestClient
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from app.core.config import settings
 from app.main import app
 from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
@@ -15,6 +18,9 @@ from app.domain.outputs.product_sales_output import ProductSalesOutput
 from app.domain.outputs.employee_sales_output import EmployeeSalesOutput
 from app.services.sale_service import SaleService
 from jose import jwt
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
 
 client = TestClient(app)
 
@@ -58,7 +64,7 @@ def create_mock_sale_service() -> ISaleService:
     return sale_service
 
 def create_jwt_token():
-    expire = datetime.utcnow() + timedelta(minutes=30)
+    expire = datetime.now(timezone.utc)  + timedelta(minutes=30)
     to_encode = {"sub": "test_user_id", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt

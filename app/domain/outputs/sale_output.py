@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, date
 from pydantic import BaseModel
 
 
 class SaleOutput(BaseModel):
     KeySale: str
-    KeyDate: datetime
+    KeyDate: date
     KeyStore: str
     KeyWarehouse: str
     KeyCustomer: str
