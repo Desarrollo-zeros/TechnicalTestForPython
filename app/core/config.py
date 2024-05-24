@@ -23,6 +23,7 @@ class Settings:
         self.MAX_SIZE_CACHE: int = int(os.getenv("MAX_SIZE_CACHE"))
         self.TTL_CACHE: int = int(os.getenv("TTL_CACHE"))
         self.URL_DATA_EXAMPLE = (os.getenv("URL_DATA_EXAMPLE"))
+        self.ml_models = {}
         self.__initialized = True
 
 

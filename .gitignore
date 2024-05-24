@@ -1,7 +1,7 @@
 .idea
 data/
-!tests/infrastructure/data
-!app/infrastructure/data
+!tests/infrastructure/data/*
+!app/infrastructure/data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

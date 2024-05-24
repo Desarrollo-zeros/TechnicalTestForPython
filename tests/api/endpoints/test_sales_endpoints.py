@@ -1,9 +1,9 @@
 import unittest
 from unittest.mock import patch
-
 import pandas as pd
 from fastapi.testclient import TestClient
 from datetime import datetime
+from app.core.config import settings
 from app.main import app
 from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
@@ -16,7 +16,6 @@ from app.domain.outputs.employee_sales_output import EmployeeSalesOutput
 from app.services.sale_service import SaleService
 
 client = TestClient(app)
-
 
 def generate_mock_sales_data():
     data = {
@@ -47,11 +46,9 @@ def generate_mock_sales_data():
     }
     return pd.DataFrame(data)
 
-
 class MockDataLoader(IDataLoader):
     def load_parquet_files(self, directory: str) -> pd.DataFrame:
         return generate_mock_sales_data()
-
 
 def create_mock_sale_service() -> ISaleService:
     data_loader: IDataLoader = MockDataLoader()
@@ -59,13 +56,11 @@ def create_mock_sale_service() -> ISaleService:
     sale_service: ISaleService = SaleService(data_manager)
     return sale_service
 
-
 class TestSalesEndpoints(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         # Configurar el sale_service en el estado de la aplicación para pruebas
-        app.state.sale_service = create_mock_sale_service()
+        settings.ml_models["sale_service"] = create_mock_sale_service()
 
     @patch("app.api.endpoints.sales.get_sale_service")
     def test_get_sales_by_employee(self, mock_get_sale_service):

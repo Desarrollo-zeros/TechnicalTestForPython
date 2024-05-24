@@ -7,20 +7,7 @@ import requests
 from zipfile import ZipFile
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.core.config import settings
-
-
-def cached_property(func):
-    """Decorator to cache instance property values."""
-
-    def wrapper(self, *args, **kwargs):
-        if not hasattr(self, '_cache'):
-            self._cache = TTLCache(maxsize=settings.MAX_SIZE_CACHE, ttl=settings.TTL_CACHE)
-        key = (func.__name__, args, frozenset(kwargs.items()))
-        if key not in self._cache:
-            self._cache[key] = func(self, *args, **kwargs)
-        return self._cache[key]
-
-    return wrapper
+from app.infrastructure.cached_property import cached_property
 
 
 class DataLoader(IDataLoader):
@@ -72,7 +59,7 @@ class DataLoader(IDataLoader):
                 zip_ref.extract(member, directory)
 
     def _load_files_in_background(self, files, directory):
-        for file in files:
+        for file in tqdm(files, desc="Cargando archivos"):
             df = pd.read_parquet(os.path.join(directory, file))
             with self._lock:
                 self._dataframe = pd.concat([self._dataframe, df], ignore_index=True)
