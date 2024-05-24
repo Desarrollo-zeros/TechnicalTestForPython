@@ -68,7 +68,7 @@ dmypy.json
 data/
 
 # Firebase service account key
-app/infrastructure/serviceAccountKey.json
+./serviceAccountKey.json
 
 # Unit test / coverage reports
 htmlcov/
