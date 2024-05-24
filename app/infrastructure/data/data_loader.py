@@ -2,10 +2,11 @@ import os
 import pandas as pd
 from cachetools import TTLCache
 from threading import Thread, Lock, Event
+from tqdm import tqdm
+import requests
+from zipfile import ZipFile
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.core.config import settings
-
-"""Se creo un decorador custom para poder obtener configurar la data en cache"""
 
 
 def cached_property(func):
@@ -33,23 +34,8 @@ class DataLoader(IDataLoader):
 
     @cached_property
     def load_parquet_files(self, directory: str) -> pd.DataFrame:
-        """
-        Carga todos los archivos Parquet desde el directorio especificado y los combina en un único DataFrame.
-        Esta operación se realiza en segundo plano.
-
-        Args:
-            directory (str): La ruta del directorio que contiene los archivos Parquet.
-
-        Returns:
-            pd.DataFrame: Un DataFrame combinado de todos los archivos Parquet.
-
-        Raises:
-            FileNotFoundError: Si el directorio no existe o no contiene archivos Parquet.
-            :param directory:
-            :return:
-        """
         if not os.path.exists(directory):
-            raise FileNotFoundError(f"El directorio {directory} no existe")
+            self._download_and_extract_zip(directory)
 
         files = [f for f in os.listdir(directory) if f.endswith('.parquet')]
         if not files:
@@ -62,6 +48,28 @@ class DataLoader(IDataLoader):
 
         self._load_complete.wait()  # Esperar a que se complete la carga
         return self._dataframe
+
+    def _download_and_extract_zip(self, directory: str):
+        os.makedirs(directory)
+        response = requests.get(settings.URL_DATA_EXAMPLE, stream=True)
+        zip_path = f"{directory}.zip"
+        total_size = int(response.headers.get('content-length', 0))
+
+        with open(zip_path, 'wb') as file, tqdm(
+                desc="Descargando archivo",
+                total=total_size,
+                unit='B',
+                unit_scale=True,
+                unit_divisor=1024,
+        ) as bar:
+            for data in response.iter_content(chunk_size=1024):
+                file.write(data)
+                bar.update(len(data))
+
+        with ZipFile(zip_path, 'r') as zip_ref:
+            zip_info_list = zip_ref.infolist()
+            for member in tqdm(zip_info_list, desc="Descomprimiendo archivo"):
+                zip_ref.extract(member, directory)
 
     def _load_files_in_background(self, files, directory):
         for file in files:

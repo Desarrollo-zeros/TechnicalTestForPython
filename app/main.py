@@ -28,15 +28,22 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    app.state.sale_service = create_sale_service()
+    try:
+        app.state.sale_service = create_sale_service()
+    except  FileNotFoundError as e:
+        print(e)
+    except Exception as e:
+        print(e)
 
 
 @app.middleware("http")
 async def add_sale_service_to_request(request: Request, call_next):
-    request.state.sale_service = app.state.sale_service
-    response = await call_next(request)
-    return response
-
+    try:
+        request.state.sale_service = app.state.sale_service
+        response = await call_next(request)
+        return response
+    except AttributeError as e:
+        print(e)
 
 app.include_router(sales.router, prefix="/api/v1", tags=["sales"])
 
