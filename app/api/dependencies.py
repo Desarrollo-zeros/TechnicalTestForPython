@@ -40,4 +40,4 @@ def get_sale_service() -> ISaleService:
     return singleton_instance.get_service()
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/token")

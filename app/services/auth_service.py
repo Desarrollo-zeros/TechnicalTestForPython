@@ -21,13 +21,6 @@ class AuthService:
             password=user_details.password,
             display_name=user_details.display_name
         )
-        db = get_firestore_client()
-        user_ref = db.collection('users').document(user.uid)
-        user_ref.set({
-            'email': user_details.email,
-            'display_name': user_details.display_name,
-            'created_at': datetime.utcnow()
-        })
         return user
 
     def login_user(self, user_credentials: UserLogin):

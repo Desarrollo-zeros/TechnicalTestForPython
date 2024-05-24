@@ -4,14 +4,14 @@ from app.core.config import settings
 
 
 
-def initialize_firebase(app_name='default'):
+def initialize_firebase():
     try:
         if not firebase_admin._apps:
             cred = credentials.Certificate(settings.SERVICE_ACCOUNT_KEY)
-            firebase_admin.initialize_app(cred, name=app_name)
-            print(f"Firebase initialized successfully with app name {app_name}")
+            firebase_admin.initialize_app(cred)
+            print(f"Firebase initialized successfully with app")
         else:
-            print(f"Firebase app {app_name} already initialized")
+            print(f"Firebase app already initialized")
     except Exception as e:
         print(f"Failed to initialize Firebase: {e}")
 
