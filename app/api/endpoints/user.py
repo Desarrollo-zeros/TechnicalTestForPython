@@ -1,7 +1,7 @@
-from fastapi import HTTPException, Depends, APIRouter
+from fastapi import Depends, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 
-from app.api.dependencies import oauth2_scheme,  get_user_service_request
+from app.api.dependencies import oauth2_scheme, get_user_service_request
 from app.domain.contracts.services.I_user_service import IUserService
 from app.domain.inputs.user_login_input import UserLogin
 from app.domain.inputs.user_register_input import UserRegistration
@@ -28,7 +28,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), user_service: IU
 
 
 @router.post("/users/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends(), user_service: IUserService = Depends(get_user_service_request)):
+async def token(form_data: OAuth2PasswordRequestForm = Depends(), user_service: IUserService = Depends(get_user_service_request)):
     user_credentials = UserLogin(email=form_data.username, password=form_data.password)
     token = user_service.login_user(user_credentials)
     return {"access_token": token, "token_type": "bearer"}

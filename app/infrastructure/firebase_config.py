@@ -1,5 +1,4 @@
 import os
-
 import firebase_admin
 from dotenv import load_dotenv
 from firebase_admin import credentials, firestore
@@ -11,7 +10,6 @@ load_dotenv()
 def initialize_firebase():
     try:
         if not firebase_admin._apps:
-
             cred = credentials.Certificate({
                 "type": os.getenv("FIREBASE_TYPE"),
                 "project_id": os.getenv("FIREBASE_PROJECT_ID"),
@@ -26,11 +24,11 @@ def initialize_firebase():
                 "universe_domain": os.getenv("FIREBASE_UNIVERSE_DOMAIN")
             })
             firebase_admin.initialize_app(cred)
-            logger.info(f"Firebase initialized successfully with app")
-            print(f"Firebase initialized successfully with app")
+            logger.info("Firebase initialized successfully with app")
+            print("Firebase initialized successfully with app")
         else:
-            logger.warning(f"Firebase app already initialized")
-            print(f"Firebase app already initialized")
+            logger.warning("Firebase app already initialized")
+            print("Firebase app already initialized")
     except Exception as e:
         logger.error(f"Failed to initialize Firebase: {e}")
         print(f"Failed to initialize Firebase: {e}")

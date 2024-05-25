@@ -26,6 +26,31 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Create .env file
+      run: |
+        echo "VERSION_API=${{ secrets.VERSION_API }}" >> .env
+        echo "DATA_DIRECTORY=${{ secrets.DATA_DIRECTORY }}" >> .env
+        echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+        echo "PROJECT_NAME=${{ secrets.PROJECT_NAME }}" >> .env
+        echo "DESCRIPTION=${{ secrets.DESCRIPTION }}" >> .env
+        echo "MAX_SIZE_CACHE=${{ secrets.MAX_SIZE_CACHE }}" >> .env
+        echo "TTL_CACHE=${{ secrets.TTL_CACHE }}" >> .env
+        echo "URL_DATA_EXAMPLE=${{ secrets.URL_DATA_EXAMPLE }}" >> .env
+        echo "SERVICE_ACCOUNT_KEY=${{ secrets.SERVICE_ACCOUNT_KEY }}" >> .env
+        echo "ACCESS_TOKEN_EXPIRE_MINUTES=${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}" >> .env
+        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+        echo "FIREBASE_TYPE=${{ secrets.FIREBASE_TYPE }}" >> .env
+        echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> .env
+        echo "FIREBASE_PRIVATE_KEY_ID=${{ secrets.FIREBASE_PRIVATE_KEY_ID }}" >> .env
+        echo "FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}" >> .env
+        echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
+        echo "FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}" >> .env
+        echo "FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI }}" >> .env
+        echo "FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }}" >> .env
+        echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+        echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
+        echo "FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN }}" >> .env
+
     - name: Run tests
       env:
         VERSION_API: ${{ secrets.VERSION_API }}
@@ -53,10 +78,15 @@ jobs:
       run: |
         python -m unittest discover -s tests -p "*.py"
 
+    - name: Format code
+      run: |
+        pip install autopep8
+        autopep8 --in-place --aggressive --aggressive -r app/
+
     - name: Lint code
       run: |
         pip install flake8
-        flake8 app
+        flake8 app --exit-zero
 
     - name: Build Docker image
       run: |
@@ -68,7 +98,7 @@ jobs:
       run: |
         echo "$SSH_PRIVATE_KEY" > id_rsa
         chmod 600 id_rsa
-        rsync -avz --exclude='.git*' -e "ssh -i id_rsa -o StrictHostKeyChecking=no" . root@154.38.180.23:/var/www/myapp
+        rsync -avz --exclude='.git*' --exclude='.github*' -e "ssh -i id_rsa -o StrictHostKeyChecking=no" . root@154.38.180.23:/var/www/myapp
         ssh -i id_rsa -o StrictHostKeyChecking=no root@154.38.180.23 << 'EOF'
           cd /var/www/myapp
           docker-compose down

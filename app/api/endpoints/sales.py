@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from typing import List
 
 from app.api.dependencies import get_sale_service_request

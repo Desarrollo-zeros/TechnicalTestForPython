@@ -1,5 +1,5 @@
 from typing import List
-from datetime import  date
+from datetime import date
 import pandas as pd
 from tqdm import tqdm
 
@@ -10,7 +10,6 @@ from app.domain.outputs.employee_sales_output import EmployeeSalesOutput
 from app.domain.outputs.product_sales_output import ProductSalesOutput
 from app.domain.outputs.store_sales_output import StoreSalesOutput
 from app.infrastructure.data.data_loader import cached_property
-
 
 
 class SaleService(ISaleService):

@@ -1,8 +1,10 @@
 from cachetools import TTLCache
 from app.core.config import settings
 
+
 def cached_property(func):
     """Decorator to cache instance property values."""
+
     def wrapper(self, *args, **kwargs):
         if not hasattr(self, '_cache'):
             self._cache = TTLCache(maxsize=settings.MAX_SIZE_CACHE, ttl=settings.TTL_CACHE)
