@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import time
 
 def health_check(url, intentos=3):
-    time.sleep(60)
+    time.sleep(100)
     for intento in range(intentos):
         try:
             respuesta = requests.get(url)
