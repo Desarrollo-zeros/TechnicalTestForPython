@@ -125,4 +125,5 @@ jobs:
         ssh -i id_rsa -o StrictHostKeyChecking=no $USER_VPS@$IP_VPS << 'EOF'
           docker ps -f "name=fastapi_app"
           docker stats fastapi_app --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
+          docker logs fastapi_app
         EOF
