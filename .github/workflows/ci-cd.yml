@@ -27,6 +27,29 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run tests
+      env:
+        VERSION_API: ${{ secrets.VERSION_API }}
+        DATA_DIRECTORY: ${{ secrets.DATA_DIRECTORY }}
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        PROJECT_NAME: ${{ secrets.PROJECT_NAME }}
+        DESCRIPTION: ${{ secrets.DESCRIPTION }}
+        MAX_SIZE_CACHE: ${{ secrets.MAX_SIZE_CACHE }}
+        TTL_CACHE: ${{ secrets.TTL_CACHE }}
+        URL_DATA_EXAMPLE: ${{ secrets.URL_DATA_EXAMPLE }}
+        SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+        ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        FIREBASE_TYPE: ${{ secrets.FIREBASE_TYPE }}
+        FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        FIREBASE_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_PRIVATE_KEY_ID }}
+        FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+        FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+        FIREBASE_CLIENT_ID: ${{ secrets.FIREBASE_CLIENT_ID }}
+        FIREBASE_AUTH_URI: ${{ secrets.FIREBASE_AUTH_URI }}
+        FIREBASE_TOKEN_URI: ${{ secrets.FIREBASE_TOKEN_URI }}
+        FIREBASE_AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}
+        FIREBASE_CLIENT_X509_CERT_URL: ${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}
+        FIREBASE_UNIVERSE_DOMAIN: ${{ secrets.FIREBASE_UNIVERSE_DOMAIN }}
       run: |
         python -m unittest discover -s tests -p "*.py"
 
