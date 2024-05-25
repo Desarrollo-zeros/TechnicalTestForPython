@@ -4,7 +4,8 @@ import sys
 from dotenv import load_dotenv
 import time
 
-def verificar_salud(url, intentos=3):
+def health_check(url, intentos=3):
+
     for intento in range(intentos):
         try:
             respuesta = requests.get(url)
@@ -18,7 +19,7 @@ def verificar_salud(url, intentos=3):
 
         if intento < intentos - 1:
             print(f"Reintentando... ({intento + 1}/{intentos})")
-            time.sleep(10)  # Esperar 5 segundos antes de reintentar
+            time.sleep(30)  # Esperar 5 segundos antes de reintentar
 
     print("Fallo en la verificación de salud después de varios intentos")
     return False
@@ -26,5 +27,5 @@ def verificar_salud(url, intentos=3):
 if __name__ == "__main__":
     load_dotenv()
     url = os.getenv("URL_HEALTH") + "/health"
-    if not verificar_salud(url):
+    if not health_check(url):
         sys.exit(1)
