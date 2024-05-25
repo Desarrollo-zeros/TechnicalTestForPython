@@ -105,6 +105,7 @@ jobs:
         chmod 600 id_rsa
         rsync -avz --exclude='.git*' --exclude='.github*' -e "ssh -i id_rsa -o StrictHostKeyChecking=no" . $USER_VPS@$IP_VPS:/var/www/myapp
         ssh -i id_rsa -o StrictHostKeyChecking=no $USER_VPS@$IP_VPS << 'EOF'
+          cp -r /var/www/data /var/www/myapp
           cd /var/www/myapp
           docker-compose down
           docker-compose up -d --build
