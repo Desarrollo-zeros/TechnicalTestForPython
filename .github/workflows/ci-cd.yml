@@ -51,7 +51,6 @@ jobs:
         echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
         echo "FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN }}" >> .env
         echo "URL_HEALTH=${{ secrets.URL_HEALTH }}" >> .env
-        
 
     - name: Run tests
       env:
@@ -114,3 +113,16 @@ jobs:
     - name: Health check
       run: |
         python health_check.py
+
+    - name: Check Docker status
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        USER_VPS: ${{ secrets.USER_VPS }}
+        IP_VPS: ${{ secrets.IP_VPS }}
+      run: |
+        echo "$SSH_PRIVATE_KEY" > id_rsa
+        chmod 600 id_rsa
+        ssh -i id_rsa -o StrictHostKeyChecking=no $USER_VPS@$IP_VPS << 'EOF'
+          docker ps -f "name=fastapi_app"
+          docker stats fastapi_app --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}\t{{.BlockIO}}"
+        EOF
