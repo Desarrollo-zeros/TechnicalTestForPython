@@ -38,12 +38,12 @@ async def lifespan(app: FastAPI):
         _ = settings.ml_models["sale_service"].get_sales_dataframe()
         yield
     except FileNotFoundError as e:
-        logger.error(f"FileNotFoundError during startup: {e}")
-        print(f"FileNotFoundError during startup: {e}")
+        logger.error(f"FileNotFoundError durante ejecución : {e}")
+        print(f"FileNotFoundError durante ejecución: {e}")
         yield
     except Exception as e:
-        logger.error(f"Exception during startup: {e}")
-        print(f"Exception during startup: {e}")
+        logger.error(f"Exception durante ejecución: {e}")
+        print(f"Exception durante ejecución: {e}")
         yield
 
 
@@ -54,8 +54,6 @@ app.middleware("http")(add_sale_service_to_request)
 app.include_router(sales.router, prefix="/api/v1", tags=["sales"], dependencies=[Depends(oauth2_scheme)])
 app.include_router(user.router, prefix="/api/v1", tags=["users"], dependencies=[Depends(initialize_firebase)])
 app.include_router(health.router, prefix="", tags=["healths"])
-
-
 
 
 # Iniciar la aplicación
