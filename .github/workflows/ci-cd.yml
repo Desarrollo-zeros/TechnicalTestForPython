@@ -98,14 +98,16 @@ jobs:
     - name: Deploy to server
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        USER_VPS: ${{ secrets.USER_VPS }}
+        IP_VPS: ${{ secrets.IP_VPS }}
       run: |
         echo "$SSH_PRIVATE_KEY" > id_rsa
         chmod 600 id_rsa
-        rsync -avz --exclude='.git*' --exclude='.github*' -e "ssh -i id_rsa -o StrictHostKeyChecking=no" . root@154.38.180.23:/var/www/myapp
-        ssh -i id_rsa -o StrictHostKeyChecking=no root@154.38.180.23 << 'EOF'
+        rsync -avz --exclude='.git*' --exclude='.github*' -e "ssh -i id_rsa -o StrictHostKeyChecking=no" . $USER_VPS@$IP_VPS:/var/www/myapp
+        ssh -i id_rsa -o StrictHostKeyChecking=no $USER_VPS@$IP_VPS << 'EOF'
           cd /var/www/myapp
-          docker compose down
-          docker compose up -d --build
+          docker-compose down
+          docker-compose up -d --build
         EOF
 
     - name: Health check
