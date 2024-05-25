@@ -50,6 +50,8 @@ jobs:
         echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
         echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
         echo "FIREBASE_UNIVERSE_DOMAIN=${{ secrets.FIREBASE_UNIVERSE_DOMAIN }}" >> .env
+        echo "URL_HEALTH=${{ secrets.URL_HEALTH }}" >> .env
+        
 
     - name: Run tests
       env:
@@ -75,6 +77,7 @@ jobs:
         FIREBASE_AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}
         FIREBASE_CLIENT_X509_CERT_URL: ${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}
         FIREBASE_UNIVERSE_DOMAIN: ${{ secrets.FIREBASE_UNIVERSE_DOMAIN }}
+        URL_HEALTH: ${{ secrets.URL_HEALTH }}
       run: |
         python -m unittest discover -s tests -p "*.py"
 
@@ -101,6 +104,10 @@ jobs:
         rsync -avz --exclude='.git*' --exclude='.github*' -e "ssh -i id_rsa -o StrictHostKeyChecking=no" . root@154.38.180.23:/var/www/myapp
         ssh -i id_rsa -o StrictHostKeyChecking=no root@154.38.180.23 << 'EOF'
           cd /var/www/myapp
-          docker-compose down
-          docker-compose up -d --build
+          docker compose down
+          docker compose up -d --build
         EOF
+
+    - name: Health check
+      run: |
+        python health_check.py

@@ -3,7 +3,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.api.dependencies import get_sale_service, oauth2_scheme, get_user_service
-from app.api.endpoints import sales, user
+from app.api.endpoints import sales, user, health
 from app.infrastructure.firebase_config import initialize_firebase
 from app.infrastructure.middleware import add_sale_service_to_request
 from app.infrastructure.logging_config import logger
@@ -53,6 +53,10 @@ app.middleware("http")(add_sale_service_to_request)
 
 app.include_router(sales.router, prefix="/api/v1", tags=["sales"], dependencies=[Depends(oauth2_scheme)])
 app.include_router(user.router, prefix="/api/v1", tags=["users"], dependencies=[Depends(initialize_firebase)])
+app.include_router(health.router, prefix="", tags=["healths"])
+
+
+
 
 # Iniciar la aplicación
 if __name__ == "__main__":
