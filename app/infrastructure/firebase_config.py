@@ -2,8 +2,8 @@ import os
 
 import firebase_admin
 from dotenv import load_dotenv
-from firebase_admin import credentials, auth, firestore
-from app.core.config import settings
+from firebase_admin import credentials, firestore
+from app.infrastructure.logging_config import logger
 
 load_dotenv()
 
@@ -26,10 +26,13 @@ def initialize_firebase():
                 "universe_domain": os.getenv("FIREBASE_UNIVERSE_DOMAIN")
             })
             firebase_admin.initialize_app(cred)
+            logger.info(f"Firebase initialized successfully with app")
             print(f"Firebase initialized successfully with app")
         else:
+            logger.warning(f"Firebase app already initialized")
             print(f"Firebase app already initialized")
     except Exception as e:
+        logger.error(f"Failed to initialize Firebase: {e}")
         print(f"Failed to initialize Firebase: {e}")
 
 
@@ -37,4 +40,5 @@ def get_firestore_client():
     if firebase_admin._apps:
         return firestore.client()
     else:
+        logger.error("Firebase is not initialized")
         raise Exception("Firebase is not initialized")

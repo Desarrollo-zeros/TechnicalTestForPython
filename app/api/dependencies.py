@@ -1,11 +1,13 @@
 from cachetools import TTLCache
 from fastapi.security import OAuth2PasswordBearer
-
+from fastapi import Request
 from app.domain.contracts.infrastructures.i_data_frame_manager import IDataFrameManager
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
+from app.domain.contracts.services.I_user_service import IUserService
 from app.domain.contracts.services.i_sale_service import ISaleService
 from app.infrastructure.data.data_loader import DataLoader
 from app.infrastructure.data.data_frame_manager import DataFrameManager
+from app.services.user_service import UserService
 from app.services.sale_service import SaleService
 from app.core.config import settings
 from threading import Lock
@@ -40,4 +42,17 @@ def get_sale_service() -> ISaleService:
     return singleton_instance.get_service()
 
 
+def get_user_service() -> IUserService:
+    user_service: IUserService = UserService()
+    return user_service
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/users/token")
+
+
+def get_sale_service_request(request: Request) -> SaleService:
+    return request.state.sale_service
+
+
+def get_user_service_request(request: Request) -> UserService:
+    return request.state.user_service

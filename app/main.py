@@ -1,13 +1,12 @@
 from contextlib import asynccontextmanager
-
-
-from fastapi import FastAPI, Request, Depends
-from starlette.responses import JSONResponse
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.dependencies import get_sale_service, oauth2_scheme
+from app.api.dependencies import get_sale_service, oauth2_scheme, get_user_service
 from app.api.endpoints import sales, user
 from app.infrastructure.firebase_config import initialize_firebase
+from app.infrastructure.middleware import add_sale_service_to_request
+from app.infrastructure.logging_config import logger
 
 # Crear la aplicación FastAPI
 app = FastAPI(
@@ -30,34 +29,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
         settings.ml_models["sale_service"] = get_sale_service()
+        settings.ml_models["user_service"] = get_user_service()
         _ = settings.ml_models["sale_service"].get_sales_dataframe()
         yield
     except FileNotFoundError as e:
+        logger.error(f"FileNotFoundError during startup: {e}")
         print(f"FileNotFoundError during startup: {e}")
         yield
     except Exception as e:
+        logger.error(f"Exception during startup: {e}")
         print(f"Exception during startup: {e}")
         yield
 
 
 app.router.lifespan_context = lifespan
 
-
-@app.middleware("http")
-async def add_sale_service_to_request(request: Request, call_next):
-    try:
-        request.state.sale_service = settings.ml_models["sale_service"]
-        response = await call_next(request)
-        return response
-    except AttributeError as e:
-        print(e)
-        return JSONResponse(status_code=500, content={"message": "Internal server error"})
-
+app.middleware("http")(add_sale_service_to_request)
 
 app.include_router(sales.router, prefix="/api/v1", tags=["sales"], dependencies=[Depends(oauth2_scheme)])
 app.include_router(user.router, prefix="/api/v1", tags=["users"], dependencies=[Depends(initialize_firebase)])

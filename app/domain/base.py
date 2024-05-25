@@ -1,4 +1,4 @@
-from typing import TypeVar, Type, List, Any
+from typing import TypeVar, Type, List
 import pandas as pd
 
 T = TypeVar('T', bound='BaseModel')

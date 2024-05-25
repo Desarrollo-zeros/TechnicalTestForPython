@@ -8,6 +8,7 @@ from zipfile import ZipFile
 from app.domain.contracts.infrastructures.i_data_loader import IDataLoader
 from app.core.config import settings
 from app.infrastructure.cached_property import cached_property
+from app.infrastructure.logging_config import logger
 
 
 class DataLoader(IDataLoader):
@@ -26,6 +27,7 @@ class DataLoader(IDataLoader):
 
         files = [f for f in os.listdir(directory) if f.endswith('.parquet')]
         if not files:
+            logger.error(f"No se encontraron archivos Parquet en el directorio {directory}")
             raise FileNotFoundError(f"No se encontraron archivos Parquet en el directorio {directory}")
 
         self._load_complete.clear()

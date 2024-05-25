@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime, date
+from datetime import  date
 import pandas as pd
 from tqdm import tqdm
 
@@ -9,8 +9,8 @@ from app.domain.contracts.services.i_sale_service import ISaleService
 from app.domain.outputs.employee_sales_output import EmployeeSalesOutput
 from app.domain.outputs.product_sales_output import ProductSalesOutput
 from app.domain.outputs.store_sales_output import StoreSalesOutput
-from app.infrastructure.data.data_loader import DataLoader, cached_property
-from app.core.config import settings
+from app.infrastructure.data.data_loader import cached_property
+
 
 
 class SaleService(ISaleService):
@@ -26,14 +26,14 @@ class SaleService(ISaleService):
 
     def get_sales_by_employee(self, key_employee: str, start_date: date, end_date: date) -> List[Sale]:
         df = self.get_sales_dataframe()
-        filtered_df = df[(df['KeyEmployee'] == key_employee) & (df['KeyDate'] >= start_date) & (df['KeyDate'] <= end_date)]
+        filtered_df = df[
+            (df['KeyEmployee'] == key_employee) & (df['KeyDate'] >= start_date) & (df['KeyDate'] <= end_date)]
         return [Sale(**item) for item in filtered_df.to_dict(orient='records')]
-
-
 
     def get_sales_by_product(self, key_product: str, start_date: date, end_date: date) -> List[Sale]:
         df = self.get_sales_dataframe()
-        filtered_df = df[(df['KeyProduct'] == key_product) & (df['KeyDate'] >= start_date) & (df['KeyDate'] <= end_date)]
+        filtered_df = df[
+            (df['KeyProduct'] == key_product) & (df['KeyDate'] >= start_date) & (df['KeyDate'] <= end_date)]
         return [Sale(**item) for item in filtered_df.to_dict(orient='records')]
 
     def get_sales_by_store(self, key_store: str, start_date: date, end_date: date) -> List[Sale]:
@@ -44,20 +44,23 @@ class SaleService(ISaleService):
     def get_total_avg_sales_by_store(self) -> List[StoreSalesOutput]:
         df = self.get_sales_dataframe()
         result = df.groupby("KeyStore").agg(total_sales=pd.NamedAgg(column="Amount", aggfunc="sum"),
-                                            avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(
+                                            avg_sales=pd.NamedAgg(column="Amount",
+                                                                  aggfunc="mean")).reset_index().to_dict(
             orient="records")
         return [StoreSalesOutput(**item) for item in result]
 
     def get_total_avg_sales_by_product(self) -> List[ProductSalesOutput]:
         df = self.get_sales_dataframe()
         result = df.groupby("KeyProduct").agg(total_sales=pd.NamedAgg(column="Amount", aggfunc="sum"),
-                                              avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(
+                                              avg_sales=pd.NamedAgg(column="Amount",
+                                                                    aggfunc="mean")).reset_index().to_dict(
             orient="records")
         return [ProductSalesOutput(**item) for item in result]
 
     def get_total_avg_sales_by_employee(self) -> List[EmployeeSalesOutput]:
         df = self.get_sales_dataframe()
         result = df.groupby("KeyEmployee").agg(total_sales=pd.NamedAgg(column="Amount", aggfunc="sum"),
-                                               avg_sales=pd.NamedAgg(column="Amount", aggfunc="mean")).reset_index().to_dict(
+                                               avg_sales=pd.NamedAgg(column="Amount",
+                                                                     aggfunc="mean")).reset_index().to_dict(
             orient="records")
         return [EmployeeSalesOutput(**item) for item in result]
