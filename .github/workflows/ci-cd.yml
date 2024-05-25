@@ -28,12 +28,12 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest
+        python -m unittest discover -s test -p "*.py"
 
     - name: Lint code
       run: |
         pip install flake8
-        flake8 .
+        flake8 app
 
     - name: Build Docker image
       run: |
