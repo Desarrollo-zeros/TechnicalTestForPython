@@ -75,7 +75,7 @@ class TestSalesEndpoints(unittest.TestCase):
         # Configurar el sale_service en el estado de la aplicación para pruebas
         settings.ml_models["sale_service"] = create_mock_sale_service()
         cls.token = create_jwt_token()
-        cls.headers = {"Authorization": f"Bearer {cls.token}"}
+        cls.headers = {"Authorization": f" {cls.token}"}
 
     @patch("app.api.endpoints.sales.get_sale_service")
     def test_get_sales_by_employee(self, mock_get_sale_service):
